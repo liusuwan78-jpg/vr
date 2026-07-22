@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="网页红井" />
+    <title>网页红井 RA2WEB - 安卓版</title>
+    <meta
+      name="keywords"
+      content="红色警戒, 红警, 红警2, 红色警戒2, RA2, RA2WEB, 网页红井, 手机版, 安卓"
+    />
+    <meta
+      name="description"
+      content="网页红井安卓版 - 经典红色警戒2手机移植版，支持触屏操作和联机对战"
+    />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./favicon.ico" />
+    <link rel="apple-touch-icon" href="./res/pwa/icon-192.png" />
+    <script>
+      var browserSupported = true;
+      try {
+        eval("'use strict'; class C { async test(...args) { let spread = {...({a: 2})} }}");
+        var canvas = document.createElement('canvas');
+        browserSupported = !!(
+          window.WebGLRenderingContext &&
+          (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')) &&
+          new Blob(['test'], { type: 'text/plain' }).arrayBuffer
+        );
+      } catch (e) {
+        browserSupported = false;
+      }
+      if (!browserSupported) {
+        alert('浏览器不支持 WebGL。\n\n请使用最新版 Chrome 或 Edge 浏览器。');
+      }
+    </script>
+    <link href="./res/fonts/fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./style.css" type="text/css" />
+    <style>
+      #ra2web-root {
+        position: relative;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        width: 100vw;
+        height: 100vh;
+        touch-action: none;
+      }
+      @media (max-height: 620px) {
+        body {
+          align-items: flex-start;
+        }
+      }
+    </style>
+    <script>
+      // 安卓 App 环境标记
+      window.__isAndroidApp = true;
+      window.__ra2webTransportMode = 'websocket-only';
+
+      // 本地资源基础路径（由 WebViewAssetLoader 提供）
+      window.__localResBase = '/gameres/';
+
+      // 等待原生桥接就绪
+      window.__androidBridgeReady = function() {
+        console.log('[RA2Web Android] Bridge ready');
+      };
+    </script>
+    <script type="module" crossorigin src="./assets/releases/0.83.1-red32c7c-d9aef5754/werhd.min.js"></script>
+  </head>
+  <body class="no-js">
+    <div id="loader-wrapper" style="display: none">
+      <div id="loader"></div>
+      <div id="loader-logo"></div>
+    </div>
+    <div id="ra2web-root"></div>
+    <script>
+      if (browserSupported) {
+        document.body.classList.remove('no-js');
+        setTimeout(() => {
+          let loader = document.getElementById('loader-wrapper');
+          if (loader) loader.style.display = '';
+        }, 2000);
+      }
+    </script>
+    <script src="./runtime/releases/0.83.1-red32c7c-d9aef5754/ra2web-helpers.js"></script>
+    <script src="./lib/three.min.js"></script>
+    <script src="./lib/three/three.shader-patch.js"></script>
+    <script src="./lib/three/three.octree.js"></script>
+    <script src="./lib/three/SimplexNoise.js"></script>
+    <script src="./lib/three/LightningStrike.js"></script>
+    <script src="./lib/three/TrailRenderer.js"></script>
+    <script src="./lib/three/SPE.min.js"></script>
+    <script src="./lib/three/SPE.patch.js"></script>
+    <script src="./lib/growingpacker.js"></script>
+    <script src="./lib/lzo1x.js"></script>
+    <script src="./lib/fullscreen-api-polyfill.min.js"></script>
+    <script>
+      // 安卓触屏优化注入
+      (function() {
+        function injectAndroidOptimizations() {
+          if (!window.__isAndroidApp) return;
+
+          // 禁用默认的触摸行为，交给原生处理手势
+          document.addEventListener('touchstart', function(e) {
+            // 单指操作不阻止，让 WebView 正常处理
+            // 多指操作由原生层处理
+          }, { passive: true });
+
+          console.log('[RA2Web Android] Optimizations injected');
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', injectAndroidOptimizations);
+        } else {
+          injectAndroidOptimizations();
+        }
+      })();
+    </script>
+    <script>
+      if (browserSupported) {
+        let loader = document.getElementById('loader-wrapper');
+        if (loader) {
+          document.body.removeChild(loader);
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">网页红井 RA2WEB</string>
+    <string name="downloading_resources">正在下载游戏资源</string>
+    <string name="preparing_download">准备中...</string>
+</resources>
